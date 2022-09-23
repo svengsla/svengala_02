@@ -1,0 +1,179 @@
+---
+title: "svengala_811240683 Assignment Module 4- Solve LP Model Using R"
+author: "Sai Supriya Vengala"
+date: '2022-09-23'
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+```{r}
+#install.packages("lpSolve")
+library("lpSolve") #Activating the lpSolve Package
+```
+
+Further going down in order to solve the problem we need to define the objective function, constraints, direction and constants
+
+Objective Function
+
+$$\text{The Objective function is to } Max \hspace{.3cm} Z = 420 (L_1+L_2+L_3) + 360 (M_1+M_2+M_3) + 300 (S_1+S_2+S_3)$$
+
+\$\$
+
+\$\$
+
+$$ \text {which can be written as } Z = 420L_1+360M_1+300S_1+420L_2+360M_2+300S_2+420L_3+360M_3+300S_3
+$$
+
+Subject to the following constraints
+
+$$
+L_1+M_1+S_1 \le 750 
+$$
+
+$$
+L_2+M_2+S_2 \le 900 
+$$
+
+$$
+L_3+M_3+S_3 \le 450
+$$
+
+$$
+20L_1+15M_1+12S_1 \le 13000
+$$
+
+$$
+20L_2+15M_2+12S_2 \le 12000
+$$
+
+$$
+20L_3+15M_3+12S_3 \le 5000
+$$
+
+$$
+L_1+L_2+L_3 \le 900
+$$
+
+$$
+M_1+M_2+M_3 \le 1200
+$$
+
+$$
+S_1+S_2+S_3 \le 750 
+$$
+
+Non Negativity Constraints
+
+$$
+ L_1,L_2,L_3,M_1,M_2,M_3,S_1,S_2,S_3 \ge 0
+$$
+
+The above constraints can be written as below
+
+$$
+L_1+M_1+S_1+0L_2+0M_2+0S_2+0L_3+0M_3+0S_3 \le 750  
+$$
+
+$$
+ 0L_1+0M_1+0S_1+L_2+M_2+S_2+0L_3+0M_3+0S_3 \le 900
+$$
+
+$$
+ 0L_1+0M_1+0S_1+0L_2+0M_2+0S_2+L_3+M_3+S_3 \le 450
+$$
+
+$$
+20L_1+15M_1+12S_1+0L_2+0M_2+0S_2+0L_3+0M_3+0S_3 \le 13000
+$$
+
+$$
+0L_1+0M_1+0S_1+20L_2+15M_2+12S_2+0L_3+0M_3+0S_3 \le 12000
+$$
+
+$$
+0L_1+0M_1+0S_1+0L_2+0M_2+0S_2+20L_3+15M_3+12S_3 \le 5000
+$$
+
+$$
+L_1+0M_1+0S_1+L_2+0M_2+0S_2+L_3+0M_3+0S_3 \le 900
+$$
+
+$$
+0L_1+M_1+0S_1+0L_2+M_2+0S_2+0L_3+M_3+0S_3 \le 1200
+$$
+
+$$
+0L_1+0M_1+S_1+0L_2+0M_2+S_2+0L_3+0M_3+S_3 \le 750
+$$
+
+Defining the Objective Function - f.obj
+
+```{r}
+f.obj <- c(420,360,300,420,360,300,420,360,300)
+```
+
+Defining the Constraints - f.con
+
+```{r}
+
+f.con <- matrix(c(1,1,1,0,0,0,0,0,0,
+                  0,0,0,1,1,1,0,0,0,
+                  0,0,0,0,0,0,1,1,1,
+                  20,15,12,0,0,0,0,0,0,
+                  0,0,0,20,15,12,0,0,0,
+                  0,0,0,0,0,0,20,15,12,
+                  1,0,0,1,0,0,1,0,0,
+                  0,1,0,0,1,0,0,1,0,
+                  0,0,1,0,0,1,0,0,1), nrow = 9, byrow=T)
+
+```
+
+Defining the Direction of the constraints - f.dir
+
+```{r}
+f.dir <- c('<=',
+
+           '<=',
+
+           '<=',
+
+           '<=',
+
+           '<=',
+
+           '<=',
+
+           '<=',
+
+           '<=',
+
+           '<=')
+```
+
+Defining the constants i.e. the right hand side values - f.rhs
+
+```{r}
+f.rhs <- c(750,900,450,13000,12000,5000,900,1200,750)
+```
+
+Here lp function is used to solve the problem basing the objective function i.e. to maximizing the profits
+
+```{r}
+lp('max',f.obj,f.con,f.dir,f.rhs)
+```
+
+Calling the lp function again to get the values for the variables defined above
+
+```{r}
+lp('max',f.obj,f.con,f.dir,f.rhs)$solution
+```
